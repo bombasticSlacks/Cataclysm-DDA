@@ -1696,7 +1696,7 @@ bool cata_tiles::find_overlay_looks_like( const bool male, const std::string &ov
 bool cata_tiles::draw_from_id_string( const std::string &id, TILE_CATEGORY category,
                                       const std::string &subcategory, const tripoint &pos,
                                       int subtile, int rota, lit_level ll,
-                                      bool apply_night_vision_goggles, int &height_3d )
+                                      bool apply_night_vision_goggles, int &height_3d, int intensity_level = -1 )
 {
     // If the ID string does not produce a drawable tile
     // it will revert to the "unknown" tile.
@@ -1772,9 +1772,8 @@ bool cata_tiles::draw_from_id_string( const std::string &id, TILE_CATEGORY categ
             }
         } else if( category == C_FIELD ) {
             const field_type_id fid = field_type_id( found_id );
-            sym = fid.obj().get_codepoint();
-            // TODO: field intensity?
-            col = fid.obj().get_color();
+            sym = fid.obj().get_codepoint(intensity);
+            col = fid.obj().get_color(intensity);
         } else if( category == C_TRAP ) {
             const trap_str_id tmp( found_id );
             if( tmp.is_valid() ) {
@@ -2697,8 +2696,15 @@ bool cata_tiles::draw_field_or_item( const tripoint &p, const lit_level ll, int 
         int rotation = 0;
         get_tile_values( fld.to_i(), neighborhood, subtile, rotation );
 
+        //get field intensity
+        if(!fld_overridden) {
+            //-1 is needed since it seems intensity in the field is counted from 1 instead of 0
+            int intensity = here.field_at( p ).get_field_intensity() - 1
+        }
+
+
         ret_draw_field = draw_from_id_string( fld.id().str(), C_FIELD, empty_string, p, subtile,
-                                              rotation, lit, nv );
+                                              rotation, lit, nv, NULL, intensity );
     }
     if( fld.obj().display_items ) {
         const auto it_override = item_override.find( p );

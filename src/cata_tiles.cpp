@@ -2697,9 +2697,10 @@ bool cata_tiles::draw_field_or_item( const tripoint &p, const lit_level ll, int 
         get_tile_values( fld.to_i(), neighborhood, subtile, rotation );
 
         //get field intensity
+        int intensity = -1;
         if(!fld_overridden) {
             //-1 is needed since it seems intensity in the field is counted from 1 instead of 0
-            int intensity = here.field_at( p ).get_field_intensity() - 1
+            intensity = here.field_at( p ).get_field_intensity() - 1
         }
 
 
